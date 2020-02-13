@@ -1,17 +1,29 @@
-import { MongoHelper } from './mongo.helper';
 import { app } from './app';
 import * as http from 'http';
+import * as mongoose from 'mongoose';
+
 import { PORT, MONGO_URL } from '../config';
 
 const server = http.createServer(app);
 server.listen(PORT);
 server.on('listening', async () => {
-  console.info(`SERVER:\t Listening on port ${PORT}`);
+  console.info(`SERVER:\tListening on port ${PORT}`);
 
-  try {
-    await MongoHelper.connect(MONGO_URL);
-    console.info('SERVER:\t Connected to MONGO DB');
-  } catch (err) {
-    console.error(err);
-  }
+  mongoose.connect(MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+
+  mongoose.connection
+    .on('open', () => {
+      let info = mongoose.connections;
+      if (info)
+        console.log(
+          `SERVER:\tConnected to MONGO DB\n\thost: ${info[0].host}\n\tport: ${info[0].port}`
+        );
+    })
+    .on('close', () => console.log('SERVER:\tDatabase connection closed.'))
+    .on('error', (err: any) => {
+      console.error(err);
+    });
 });
