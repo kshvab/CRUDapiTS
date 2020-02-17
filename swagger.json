@@ -1,0 +1,463 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a test task api server",
+    "version": "1.0.0",
+    "title": "Swagger Operator ICT api",
+    "contact": {
+      "email": "kshvab@yahoo.com"
+    }
+  },
+  "host": "localhost",
+  "tags": [
+    {
+      "name": "appstatus",
+      "description": "Endpoint to determine the status of the application"
+    },
+    {
+      "name": "newkey",
+      "description": "Endpoint to generate a new api-key"
+    },
+    {
+      "name": "cards",
+      "description": "Endpoint to check the status and validity of the card"
+    },
+    {
+      "name": "users",
+      "description": "Everything about Users"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/appstatus": {
+      "get": {
+        "tags": [
+          "appstatus"
+        ],
+        "summary": "Check the status of the app",
+        "description": "",
+        "operationId": "showStatus",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Appstatus"
+            }
+          }
+        }
+      }
+    },
+    "/newkey": {
+      "get": {
+        "tags": [
+          "newkey"
+        ],
+        "summary": "Get new api-key",
+        "description": "",
+        "operationId": "getNewKey",
+        "responses": {
+          "200": {
+            "description": "New API-key generated",
+            "schema": {
+              "type": "string",
+              "example": "New API-key generated: ef58bfd0-5117-11ea-824d-fdb8784e454e"
+            }
+          },
+          "401": {
+            "description": "Access denied",
+            "schema": {
+              "type": "string",
+              "example": "Access denied,\na valid administrator Header is required!"
+            }
+          },
+          "500": {
+            "description": "Problems with connecting to DB",
+            "schema": {
+              "type": "string",
+              "example": "Problems with connecting to DB"
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_key": []
+          }
+        ]
+      }
+    },
+    "/cards/{id}": {
+      "get": {
+        "tags": [
+          "cards"
+        ],
+        "summary": "Secure endpoint to check the status and validity of the card",
+        "description": "returns the status and validity of the card",
+        "operationId": "getCardInfo",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "card number",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "card info",
+            "schema": {
+              "$ref": "#/definitions/Cardstatus"
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get all users (arr)",
+        "description": "",
+        "operationId": "getAllUsers",
+        "responses": {
+          "200": {
+            "description": "All users array",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Add a new user",
+        "description": "body required fields are: username: string, cards: [string] ",
+        "operationId": "addUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User to add",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Usertoadd"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid User"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get one user by ID",
+        "description": "returns the user info",
+        "operationId": "getUsernfo",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "user ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user info",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "Such user does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete user by ID",
+        "operationId": "dellOneUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "user ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "Such user does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Edit user by ID",
+        "operationId": "editOneUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "user ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "New user data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Usertoadd"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "404": {
+            "description": "Such user does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "x-api-key",
+      "description": "example: ef58bfd0-5117-11ea-824d-fdb8784e454e",
+      "in": "header"
+    },
+    "admin_key": {
+      "type": "apiKey",
+      "description": "use word: operatorict",
+      "name": "x-api-key",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "Appstatus": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/definitions/Server"
+        },
+        "database": {
+          "$ref": "#/definitions/Database"
+        }
+      },
+      "xml": {
+        "name": "Appstatus"
+      }
+    },
+    "Cardstatus": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "example": "Aktivní v držení klienta"
+        },
+        "expiration": {
+          "type": "string",
+          "example": "12.8.20"
+        }
+      },
+      "xml": {
+        "name": "Cardstatus"
+      }
+    },
+    "Server": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "isListening": {
+          "type": "boolean"
+        },
+        "port": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Server"
+      }
+    },
+    "Database": {
+      "type": "object",
+      "properties": {
+        "isConnected": {
+          "type": "boolean"
+        },
+        "cluster": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "number"
+        }
+      },
+      "xml": {
+        "name": "Database"
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Cardnumber"
+          }
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    },
+    "Usertoadd": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Cardnumber"
+          }
+        }
+      },
+      "xml": {
+        "name": "Usertoadd"
+      }
+    },
+    "Cardnumber": {
+      "type": "object",
+      "properties": {
+        "cardNumber": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Cardnumber"
+      }
+    }
+  }
+}
